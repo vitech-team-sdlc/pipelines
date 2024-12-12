@@ -1,0 +1,88 @@
+name: Version Next
+description: |
+  Action to version the next release/artifact of a project using semantic-release.
+inputs:
+  install-node:
+    description: Install Node.js
+    required: false
+    default: 'true'
+  use-default-config:
+    description: Use default semantic-release config
+    required: false
+    default: 'false'
+  dry-run:
+    description: Run semantic-release in dry-run mode
+    required: false
+    default: 'true'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install LTS Node
+      if: ${{ inputs.install-node == 'true' }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: 'lts/*'
+
+    - name: Setup semantic-release config
+      if: ${{ inputs.use-default-config == 'false' }}
+      shell: python
+      # language=python
+      run: |
+        import os
+
+        config = '.releaserc.json'
+        if os.path.exists(config):
+            print(f'{config} exists')
+        else:
+            with open(config, 'w') as f:
+                f.write(
+                    '''{
+                      "branches": [
+                        "main"
+                      ],
+                      "tagFormat": "${version}",
+                      "plugins": [
+                        "@semantic-release/commit-analyzer",
+                        "@semantic-release/release-notes-generator",
+                        "@semantic-release/github",
+                        [
+                          "@semantic-release/exec",
+                          {
+                            "verifyReleaseCmd": "echo ${nextRelease.version} > .VERSION"
+                          }
+                        ]
+                      ]
+                    }
+                '''
+                )
+            print(f'{config} created')
+
+    - name: "Semantic Release: Dry Run"
+      shell: bash
+      if: ${{ inputs.dry-run == 'true' }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      #language="bash"
+      run: |
+        npx -p semantic-release-slack-bot -p @semantic-release/exec semantic-release --dry-run
+
+    - name: "Semantic Release"
+      shell: bash
+      if: ${{ inputs.dry-run == 'false' }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      #language="bash"
+      run: |
+        npx -p semantic-release-slack-bot -p @semantic-release/exec semantic-release --dry-run
+
+    - name: Extract version from Git tags
+      id: extract_version
+      shell: bash
+      #language="bash"
+      run: |
+        export VERSION=$(cat .VERSION)
+        echo "Next version: $VERSION"
+        echo "version=$VERSION" >> $GITHUB_ENV
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
