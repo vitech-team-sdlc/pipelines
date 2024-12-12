@@ -1,0 +1,47 @@
+name: Docker Build & Push
+description: Docker Build & Push
+inputs:
+  version:
+    description: artifact version
+    required: true
+  image:
+    description: image
+    required: true
+  docker_file:
+    description: docker file to build
+    default: "Dockerfile"
+    required: true
+  context:
+    description: docker context
+    required: true
+  gh_token:
+    description: docker context
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Log in to the Container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ inputs.gh_token }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ inputs.image }}
+
+    - name: Build and push Docker image
+      id: push
+      uses: docker/build-push-action@v4
+      with:
+        file: "${{ inputs.context }}/${{ inputs.docker_file }}"
+        context: ${{ inputs.context }}
+        push: true
+        tags: |
+          ${{ steps.meta.outputs.tags }}
+          ${{ inputs.image }}:${{ inputs.version }}
+          ${{inputs.image }}:latest
+        labels: ${{ steps.meta.outputs.labels }}
