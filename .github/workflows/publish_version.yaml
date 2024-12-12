@@ -1,0 +1,37 @@
+name: Publish New Release Version
+
+on:
+  workflow_dispatch:
+
+  workflow_call:
+    outputs:
+      version:
+        description: "released version of artifact"
+        value: ${{ jobs.new_version.outputs.version }}
+
+jobs:
+  new_version:
+    name: 🚀 Publish New Version Artifact
+    permissions:
+      issues: read
+      pull-requests: read
+      id-token: read
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - uses: ./.github/actions/version-next
+        id: extract_version
+        with:
+          dry-run: 'false'
+          use-default-config: 'false'
