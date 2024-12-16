@@ -1,6 +1,10 @@
 name: Scan Container with Trivy
 description: More https://github.com/aquasecurity/trivy-action
 inputs:
+  dockerfile:
+    description: docker file to build
+    default: "Dockerfile"
+    required: true
   image:
     description: image
     required: true
@@ -30,9 +34,27 @@ runs:
         export IMAGE_SHORT="${{ inputs.image }}"
         echo "IMAGE_SHORT=$( echo $IMAGE_SHORT | sed 's/ghcr.io\///' )" >> $GITHUB_ENV
 
-    - name: "🎁 Publish Trivy Vulnerability"
+    - name: Scan Dockerfile
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        scan-type: 'config'
+        scan-ref: '${{ inputs.dockerfile }}'
+        trivy-config: trivy.yaml
+        template: "@$HOME/.local/bin/trivy-bin/contrib/junit.tpl"
+        exit-code: '0'
+        ignore-unfixed: true
+        output: 'trivy-results.config.sarif'
+
+    - name: "🎁 Publish Trivy Image"
       uses: mikepenz/action-junit-report@v5
       with:
         check_name: '🐳 Trivy: ${{ env.IMAGE_SHORT }}'
         report_paths: trivy-results.sarif
+        annotate_only: false
+
+    - name: "🎁 Publish Trivy Dockerfile"
+      uses: mikepenz/action-junit-report@v5
+      with:
+        check_name: '🐳 Trivy: ${{ inputs.dockerfile}}'
+        report_paths: trivy-results.config.sarif
         annotate_only: false
