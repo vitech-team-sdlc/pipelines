@@ -1,0 +1,31 @@
+name: Docker Build & Push
+description: Docker Build & Push
+inputs:
+  image:
+    description: image
+    required: true
+  gh_token:
+    description: docker context
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: "👀 Trivy: Scan Docker Image"
+      uses: aquasecurity/trivy-action@0.29.0
+      with:
+        image-ref: '${{ inputs.image }}'
+        format: 'template'
+        template: "@$HOME/.local/bin/trivy-bin/contrib/junit.tpl"
+        exit-code: '0'
+        ignore-unfixed: true
+        output: 'trivy-results.sarif'
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+        github-pat: ${{ inputs.gh_token }}
+
+    - name: "🎁 Publish Trivy Vulnerability"
+      uses: mikepenz/action-junit-report@v5
+      with:
+        check_name: '🐳Trivy: ${{ inputs.image }}'
+        report_paths: trivy-results.sarif
+        annotate_only: false
