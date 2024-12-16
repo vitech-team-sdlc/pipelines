@@ -41,9 +41,7 @@ runs:
         context: ${{ inputs.context }}
         push: true
         tags: |
-          ${{ steps.meta.outputs.tags }}
           ${{ inputs.image }}:${{ inputs.version }}
-          ${{inputs.image }}:latest
         labels: ${{ steps.meta.outputs.labels }}
         build-args: |
           GITHUB_TOKEN=${{ inputs.gh_token }}
