@@ -1,5 +1,5 @@
-name: Docker Build & Push
-description: Docker Build & Push
+name: Scan Container with Trivy
+description: More https://github.com/aquasecurity/trivy-action
 inputs:
   image:
     description: image
