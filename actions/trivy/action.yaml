@@ -23,9 +23,16 @@ runs:
         severity: 'CRITICAL,HIGH'
         github-pat: ${{ inputs.gh_token }}
 
+    - name: "tune name"
+      shell: bash
+      # language="bash"
+      run: |
+        export IMAGE_SHORT="${{ inputs.image }}"
+        echo "IMAGE_SHORT=$( echo $IMAGE_SHORT | sed 's/ghcr.io\///' )" >> $GITHUB_ENV
+
     - name: "🎁 Publish Trivy Vulnerability"
       uses: mikepenz/action-junit-report@v5
       with:
-        check_name: '🐳Trivy: ${{ inputs.image }}'
+        check_name: '🐳 Trivy: ${{ env.IMAGE_SHORT }}'
         report_paths: trivy-results.sarif
         annotate_only: false
