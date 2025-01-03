@@ -13,9 +13,10 @@ jobs:
   new_version:
     name: 👀 Detecting New Version
     permissions:
-      issues: read
-      pull-requests: read
-      id-token: read
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.extract_version.outputs.version }}
