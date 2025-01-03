@@ -69,11 +69,12 @@ runs:
       if: ${{ inputs.dry-run == 'false' }}
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
+        GH_TOKEN: ${{ inputs.token }}
         SLACK_WEBHOOK: ${{ inputs.slack_webhook }}
         SEMANTIC_RELEASE_PACKAGE: ${{ github.repository}}
       #language="bash"
       run: |
-        npx -p semantic-release-slack-bot -p @semantic-release/exec semantic-release --dry-run
+        npx -p semantic-release-slack-bot -p @semantic-release/exec semantic-release
 
     - name: Extract version from Git tags
       id: extract_version
