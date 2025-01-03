@@ -8,7 +8,7 @@ on:
       GH_TOKEN:
         description: "GitHub Token"
         required: true
-      SLACK_WEBHOOKL:
+      SLACK_WEBHOOK:
         description: "Slack Webhook"
         required: true
     outputs:
