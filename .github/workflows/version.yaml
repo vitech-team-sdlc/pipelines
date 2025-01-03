@@ -5,7 +5,7 @@ on:
 
   workflow_call:
     secrets:
-      GH_TOKEN:
+      GITHUB_TOKEN:
         description: "GitHub Token"
         required: true
       SLACK_WEBHOOK:
