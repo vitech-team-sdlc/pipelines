@@ -58,6 +58,8 @@ runs:
     - name: Build and push Docker image
       id: push
       uses: docker/build-push-action@v6
+      env:
+        GITHUB_TOKEN: ${{ inputs.gh_token }}
       with:
         build-contexts: |
           ${{ inputs.build-contexts }}
