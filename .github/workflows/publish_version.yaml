@@ -43,3 +43,5 @@ jobs:
         with:
           dry-run: 'false'
           use-default-config: 'false'
+          token: ${{ secrets.GH_TOKEN }}
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
