@@ -69,6 +69,8 @@ runs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         push: true
+        secrets: |
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
         tags: |
           ${{ steps.meta.outputs.tags }}
           ${{ inputs.image }}:${{ inputs.version }}
