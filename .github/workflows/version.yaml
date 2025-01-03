@@ -26,7 +26,7 @@ jobs:
         with:
           node-version: 'lts/*'
 
-      - uses: ./actions/version-next
+      - uses: vitech-team-sdlc/pipelines/actions/version-next@main
         id: extract_version
         with:
           dry-run: 'true'
