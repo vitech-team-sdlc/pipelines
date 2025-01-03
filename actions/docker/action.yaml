@@ -70,7 +70,7 @@ runs:
         cache-to: type=gha,mode=max
         push: true
         secrets: |
-          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN=${{ inputs.gh_token }}
         tags: |
           ${{ steps.meta.outputs.tags }}
           ${{ inputs.image }}:${{ inputs.version }}
