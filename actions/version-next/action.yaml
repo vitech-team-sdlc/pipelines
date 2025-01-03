@@ -59,6 +59,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
         SLACK_WEBHOOK: ${{ inputs.slack_webhook }}
+        SEMANTIC_RELEASE_PACKAGE: ${{ github.repository}}
       #language="bash"
       run: |
         npx -p semantic-release-slack-bot -p @semantic-release/exec semantic-release --dry-run
@@ -69,6 +70,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
         SLACK_WEBHOOK: ${{ inputs.slack_webhook }}
+        SEMANTIC_RELEASE_PACKAGE: ${{ github.repository}}
       #language="bash"
       run: |
         npx -p semantic-release-slack-bot -p @semantic-release/exec semantic-release --dry-run
