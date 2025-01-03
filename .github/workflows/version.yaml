@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: 'lts/*'
 
-      - uses: ./.github/actions/version-next
+      - uses: ./actions/version-next
         id: extract_version
         with:
           dry-run: 'true'
