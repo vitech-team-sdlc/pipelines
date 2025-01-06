@@ -1,0 +1,37 @@
+name: Update version in pyproject.toml
+inputs:
+  pyproject-toml:
+    description: path to pyproject.toml
+    required: true
+    default: "pyproject.toml"
+  version:
+    description: artifact version
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: update pyproject.toml
+      uses: vitech-team-sdlc/pipelines/actions/toml@main
+      with:
+        file: "${{ inputs.pyproject-toml }}"
+        property: "tool.poetry.version"
+        value: "${{ inputs.version }}"
+    - name: Commit and push changes
+      shell: bash
+      env:
+        VERSION: "${{ inputs.version }}"
+      #language=bash
+      run: |
+        # Configure Git
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+        # Check if there is any change to commit
+        if [ -n "$(git status --porcelain pyproject.toml)" ]; then
+          echo "Changes detected in pyproject.toml. Committing..."
+          git add pyproject.toml
+          git commit -m "chore: update pyproject.toml to version $VERSION"
+          git push origin HEAD
+        else
+          echo "No changes in pyproject.toml to commit."
+        fi
