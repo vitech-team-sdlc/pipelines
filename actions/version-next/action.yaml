@@ -77,7 +77,6 @@ runs:
         npx -p semantic-release-slack-bot -p @semantic-release/exec semantic-release
 
     - name: Extract version from Git tags
-      id: extract_version
       shell: bash
       #language="bash"
       run: |
