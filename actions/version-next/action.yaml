@@ -16,6 +16,10 @@ inputs:
   slack_webhook:
     description: Slack webhook url
     required: true
+outputs:
+  version:
+    description: 'new version detected by semantic-release'
+    value: ${{ steps.new_version_sr.outputs.version }}
 runs:
   using: 'composite'
   steps:
@@ -77,6 +81,7 @@ runs:
         npx -p semantic-release-slack-bot -p @semantic-release/exec semantic-release
 
     - name: Extract version from Git tags
+      id: new_version_sr
       shell: bash
       #language="bash"
       run: |
