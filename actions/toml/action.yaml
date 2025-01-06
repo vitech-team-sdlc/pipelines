@@ -19,4 +19,4 @@ runs:
     - name: updating toml property
       shell: bash
       # language=bash
-      run: python3 ${{ actions.toml.action_path }}/main.py ${{ inputs.file }} ${{ inputs.property }} ${{ inputs.value }}
+      run: python3 ${{ github.action_path }}/main.py ${{ inputs.file }} ${{ inputs.property }} ${{ inputs.value }}
