@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "control_service"
+version = "1.4.2"
+description = "A control service for the stations"
+authors = ["Serhii Tverdokhlib <st@vidar.systems>"]
+include = [
+    "src/control_service/generated/*.py"
+]
+build = "generate_proto.py"
+
+
+[tool.poetry.dependencies]
+python = "^3.11"
+grpcio = "^1.64.1"
+grpcio-tools = "^1.64.1"
+black = "^24.4.2"
+wheel = "^0.43.0"
+protobuf = "^5.27.3"
+numpy = "<2.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.8.2"
+pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.9.0", "grpcio-tools>=1.64.1"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+control-service = "control_service.main:main"
+generate-proto = "generate_proto:main"

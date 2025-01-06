@@ -1,0 +1,22 @@
+name: Toml Property Updater
+description: Update a property in a toml file
+inputs:
+  file:
+    description: "Path to the file to update"
+    required: true
+  property:
+    description: "Property to update. x.y.z"
+    required: true
+  value:
+    description: "Value to set"
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: install toml dependencies
+      shell: bash
+      run: pip install tomlkit
+    - name: updating toml property
+      shell: bash
+      # language=bash
+      run: python3 ${{ actions.toml.action_path }}/main.py ${{ inputs.file }} ${{ inputs.property }} ${{ inputs.value }}
