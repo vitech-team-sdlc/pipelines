@@ -85,7 +85,13 @@ runs:
       shell: bash
       #language="bash"
       run: |
-        export VERSION=$(cat .VERSION)
+        export VERSION="$(cat .VERSION)"
+        
+        if [ -z "$VERSION" ]; then
+          echo "Version variable is empty. Please check if \".releaserc.json\" contains next line: [ \"@semantic-release/exec\",  { \"verifyReleaseCmd\": \"echo \${nextRelease.version} > .VERSION\" } ] "
+          exit 1
+        fi
+          
         echo "Next version: $VERSION"
         echo "version=$VERSION" >> $GITHUB_ENV
         echo "version=$VERSION" >> $GITHUB_OUTPUT
