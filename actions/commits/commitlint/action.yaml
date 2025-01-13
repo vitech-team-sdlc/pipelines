@@ -14,6 +14,9 @@ inputs:
     description: publish the commitlint as GH check
     required: false
     default: 'false'
+  token:
+    description: GitHub Token
+    required: true
 runs:
   using: 'composite'
   steps:
