@@ -10,6 +10,10 @@ inputs:
     description: fail on error
     required: false
     default: 'false'
+  publish:
+    description: publish the commitlint as GH check
+    required: false
+    default: 'false'
 runs:
   using: 'composite'
   steps:
@@ -24,14 +28,25 @@ runs:
         done
         echo "All modules installed: ${{ inputs.modules }}"
 
-    - name: Validate current commit (last commit) with commitlint
-      if: github.event_name == 'push'
-      shell: bash
-      continue-on-error: ${{ inputs.fail-on-error == 'true' }}
-      run: npx commitlint --last --verbose
-
     - name: Validate PR commits with commitlint
-      if: github.event_name == 'pull_request'
       shell: bash
+      id: commitlint
       continue-on-error: ${{ inputs.fail-on-error == 'true' }}
-      run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+      #language=bash
+      run: |
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          echo "Validating PR commits with commitlint..."
+          npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose &> commitlint.log
+        else
+          npx commitlint --last --verbose &> commitlint.log
+        fi
+        echo "summary=$(cat commitlint.log)" >> $GITHUB_OUTPUT
+
+    - uses: LouisBrunner/checks-action@v2.0.0
+      if: ${{ inputs.publish == 'true' }}
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: 🌚 Commitlint
+        conclusion: ${{ job.status }}
+        output: |
+          {"summary":"${{ steps.commitlint.outputs.summary }}"}
