@@ -42,7 +42,7 @@ runs:
     - shell: bash
       #language=bash
       run: |
-        echo "summary=$(cat commitlint.log)" >> $GITHUB_OUTPUT
+        #echo "summary=$(cat commitlint.log)" >> $GITHUB_OUTPUT
         cat commitlint.log
 
     - name: "Create a check run"
