@@ -39,7 +39,11 @@ runs:
         else
           npx commitlint --last --verbose &> commitlint.log
         fi
+    - shell: bash
+      #language=bash
+      run: |
         echo "summary=$(cat commitlint.log)" >> $GITHUB_OUTPUT
+        cat commitlint.log
 
     - uses: LouisBrunner/checks-action@v2.0.0
       if: ${{ inputs.publish == 'true' }}
