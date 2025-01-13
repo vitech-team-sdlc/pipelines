@@ -6,10 +6,6 @@ inputs:
     description: modules to install
     required: true
     default: "@commitlint/config-conventional,@commitlint/config-angular"
-  not-fail-on-error:
-    description: fail on error
-    required: false
-    default: 'false'
   publish:
     description: publish the commitlint as GH check
     required: false
@@ -34,7 +30,7 @@ runs:
     - name: Validate PR commits with commitlint
       shell: bash
       id: commitlint
-      continue-on-error: ${{ inputs.fail-on-error == 'true' }}
+      continue-on-error: true
       #language=bash
       run: |
         if [ "${{ github.event_name }}" == "pull_request" ]; then
