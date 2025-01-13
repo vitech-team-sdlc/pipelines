@@ -1,0 +1,37 @@
+name: verify commits with commitlint
+description: |
+  Verify commits with commitlint according to the provided configuration.
+inputs:
+  modules:
+    description: modules to install
+    required: true
+    default: "@commitlint/config-conventional,@commitlint/config-angular"
+  not-fail-on-error:
+    description: fail on error
+    required: false
+    default: 'false'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install dependencies
+      shell: bash
+      #language=bash
+      run: |
+        IFS=',' read -ra MODULES <<< "${{ inputs.modules }}"
+        for module in "${MODULES[@]}"; do
+          echo "Installing $module globally..."
+          npm install -g "$module"
+        done
+        echo "All modules installed: ${{ inputs.modules }}"
+
+    - name: Validate current commit (last commit) with commitlint
+      if: github.event_name == 'push'
+      shell: bash
+      continue-on-error: ${{ inputs.fail-on-error == 'true' }}
+      run: npx commitlint --last --verbose
+
+    - name: Validate PR commits with commitlint
+      if: github.event_name == 'pull_request'
+      shell: bash
+      continue-on-error: ${{ inputs.fail-on-error == 'true' }}
+      run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
