@@ -48,7 +48,7 @@ runs:
     - uses: LouisBrunner/checks-action@v2.0.0
       if: ${{ inputs.publish == 'true' }}
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ inputs.token }}
         name: 🌚 Commitlint
         conclusion: ${{ job.status }}
         output: |
