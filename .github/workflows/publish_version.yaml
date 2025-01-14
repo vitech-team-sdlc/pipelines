@@ -40,7 +40,7 @@ jobs:
           fetch-depth: 0
 
       - name: Pull Latest Changes
-        if: ${{ inputs.pull-latest == 'true' }}
+        if: ${{ inputs.pull-latest == true }}
         shell: bash
         run: |
           # Use GitHub’s default_branch if available, otherwise fall back to 'main'
