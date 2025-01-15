@@ -55,8 +55,7 @@ runs:
           
           const pullRequest = github.context.payload.pull_request
           const conclusion: 'success' | 'failure' = context.job.status === "success" ? "success" : "failure"
-          const commit = undefined
-          const headSha = commit || (pullRequest && pullRequest.head.sha) || github.context.sha
+          const headSha = (pullRequest && pullRequest.head.sha) || github.context.sha
           core.info(`ℹ️ Posting with conclusion '${conclusion}' to ${link} (sha: ${headSha})`)
 
           await github.rest.checks.create({
