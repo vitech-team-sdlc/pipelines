@@ -59,13 +59,13 @@ runs:
           await github.rest.checks.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            head_sha: context.event.pull_request.head.sha,
+            head_sha: context.sha,
             name: "🌚Commitlint",
             status: "completed",
             conclusion: context.job.status === "success" ? "success" : "failure",
             output: {
-              title: "🌚Commitlint",
-              summary: `Commitlint ${context.job.status}`,
-              text: commitlintLog,
+              title: "1🌚Commitlint",
+              summary: `2Commitlint ${context.job.status}`,
+              text: "3text",
             },
           });
