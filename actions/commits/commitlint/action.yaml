@@ -35,14 +35,21 @@ runs:
       run: |
         if [ "${{ github.event_name }}" == "pull_request" ]; then
           echo "Validating PR commits with commitlint..."
-          npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose &> commitlint.log
+          COMMITLINT_ARGS="--from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}"
         else
-          npx commitlint --last --verbose &> commitlint.log
+          COMMITLINT_ARGS="--last"
         fi
-#    - shell: bash
-#      #language=bash
-#      run: |
-#        cat commitlint.log
+        
+        if npx commitlint $COMMITLINT_ARGS --verbose &> commitlint.log; then
+          echo "status=success" >> "$GITHUB_OUTPUT"
+        else
+          echo "status=failure" >> "$GITHUB_OUTPUT"
+        fi
+
+    - shell: bash
+      #language=bash
+      run: |
+        cat commitlint.log
 
     - name: "Create a check run"
       uses: actions/github-script@v6
@@ -54,10 +61,10 @@ runs:
           const commitlintLog = fs.readFileSync('commitlint.log', 'utf8');
           
           const pullRequest = context.payload.pull_request
-          const conclusion = "${{ steps.commitlint.conclusion }}"
+          const conclusion = "${{ steps.commitlint.outputs.status }}"
           const headSha = (pullRequest && pullRequest.head.sha) || context.sha
           const link = pullRequest?.html_url || "[no PR link]"
-          core.info(`ℹ️ Posting with conclusion '${conclusion}' to ${link} (sha: ${headSha}) commitlint: ${{ steps.commitlint.conclusion }}`)
+          core.info(`ℹ️ Posting with conclusion '${conclusion}' to ${link} (sha: ${headSha}) commitlint: ${{ steps.commitlint.outputs.status }}`)
 
           await github.rest.checks.create({
             owner: context.repo.owner,
