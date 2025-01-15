@@ -42,22 +42,24 @@ runs:
     - shell: bash
       #language=bash
       run: |
-        #echo "summary=$(cat commitlint.log)" >> $GITHUB_OUTPUT
         cat commitlint.log
 
     - name: "Create a check run"
       uses: actions/github-script@v6
       with:
+        #language=javascript
         script: |
           // Read the commitlint.log content
           const fs = require('fs');
           const commitlintLog = fs.readFileSync('commitlint.log', 'utf8');
+          
+          console.log(commitlintLog);
 
           // Create the check run
           await github.rest.checks.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            head_sha: context.sha,
+            head_sha: context.event.pull_request.head.sha,
             name: "🌚Commitlint",
             status: "completed",
             conclusion: context.job.status === "success" ? "success" : "failure",
