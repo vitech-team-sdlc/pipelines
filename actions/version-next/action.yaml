@@ -16,6 +16,10 @@ inputs:
   slack_webhook:
     description: Slack webhook url
     required: true
+  fail:
+    description: Fail if no version is detected
+    required: false
+    default: 'true'
 outputs:
   version:
     description: 'new version detected by semantic-release'
@@ -80,18 +84,24 @@ runs:
       run: |
         npx -p semantic-release-slack-bot -p @semantic-release/exec semantic-release
 
+    - name: check if version presented
+      if: ${{ inputs.fail == 'true' }}
+      shell: bash
+      #language="bash"
+      run: |
+        export VERSION="$(cat .VERSION)"
+        if [ -z "$VERSION" ]; then
+          echo "Version variable is empty. Please check if \".releaserc.json\" contains next line: [ \"@semantic-release/exec\",  { \"verifyReleaseCmd\": \"echo \${nextRelease.version} > .VERSION\" } ] "
+          echo "Also check if your commit message is correct and applicable to semantic-release/conventional commits"
+          exit 1
+        fi
+
     - name: Extract version from Git tags
       id: new_version_sr
       shell: bash
       #language="bash"
       run: |
-        export VERSION="$(cat .VERSION)"
-        
-        if [ -z "$VERSION" ]; then
-          echo "Version variable is empty. Please check if \".releaserc.json\" contains next line: [ \"@semantic-release/exec\",  { \"verifyReleaseCmd\": \"echo \${nextRelease.version} > .VERSION\" } ] "
-          exit 1
-        fi
-          
+        export VERSION="$(cat .VERSION)"        
         echo "Next version: $VERSION"
         echo "version=$VERSION" >> $GITHUB_ENV
         echo "version=$VERSION" >> $GITHUB_OUTPUT
