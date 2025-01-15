@@ -39,10 +39,10 @@ runs:
         else
           npx commitlint --last --verbose &> commitlint.log
         fi
-    - shell: bash
-      #language=bash
-      run: |
-        cat commitlint.log
+#    - shell: bash
+#      #language=bash
+#      run: |
+#        cat commitlint.log
 
     - name: "Create a check run"
       uses: actions/github-script@v6
@@ -53,6 +53,7 @@ runs:
           const fs = require('fs');
           const commitlintLog = fs.readFileSync('commitlint.log', 'utf8');
           
+          console.log(`commit to publish: ${context.sha}`);
           console.log(commitlintLog);
 
           // Create the check run
