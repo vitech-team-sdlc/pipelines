@@ -54,9 +54,9 @@ runs:
           const commitlintLog = fs.readFileSync('commitlint.log', 'utf8');
           
           const pullRequest = github.context.payload.pull_request
-          const conclusion: 'success' | 'failure' = 'success'
+          const conclusion: 'success' | 'failure' = "success"
           const headSha = (pullRequest && pullRequest.head.sha) || github.context.sha
-          core.info(`ℹ️ Posting with conclusion '${conclusion}' to ${link} (sha: ${headSha})`)
+          core.info(`ℹ️ Posting with conclusion '${conclusion}' to ${link} (sha: ${headSha}) job: ${context.job.status}`)
 
           await github.rest.checks.create({
             owner: context.repo.owner,
