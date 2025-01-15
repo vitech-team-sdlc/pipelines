@@ -51,19 +51,19 @@ runs:
         script: |
           // Read the commitlint.log content
           const fs = require('fs');
-          const commitlintLog = fs.readFileSync('commitlint.log', 'utf8');
-          
-          console.log(`commit to publish: ${context.sha}`);
-          console.log(commitlintLog);
+          const pullRequest = github.context.payload.pull_request
+          const conclusion: 'success' | 'failure' = context.job.status === "success" ? "success" : "failure"
+          const commit = undefined
+          const headSha = commit || (pullRequest && pullRequest.head.sha) || github.context.sha
+          core.info(`ℹ️ Posting with conclusion '${conclusion}' to ${link} (sha: ${headSha})`)
 
-          // Create the check run
           await github.rest.checks.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            head_sha: context.sha,
+            head_sha: headSha,
             name: "🌚Commitlint",
             status: "completed",
-            conclusion: context.job.status === "success" ? "success" : "failure",
+            conclusion: conclusion,
             output: {
               title: "1🌚Commitlint",
               summary: `2Commitlint ${context.job.status}`,
