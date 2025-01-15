@@ -57,7 +57,7 @@ runs:
           const conclusion = "${{ steps.commitlint.conclusion }}"
           const headSha = (pullRequest && pullRequest.head.sha) || context.sha
           const link = pullRequest?.html_url || "[no PR link]"
-          core.info(`ℹ️ Posting with conclusion '${conclusion}' to ${link} (sha: ${headSha}) job: ${context.job.status}`)
+          core.info(`ℹ️ Posting with conclusion '${conclusion}' to ${link} (sha: ${headSha}) commitlint: ${{ steps.commitlint.conclusion }}`)
 
           await github.rest.checks.create({
             owner: context.repo.owner,
