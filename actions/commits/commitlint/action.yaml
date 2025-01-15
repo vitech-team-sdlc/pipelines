@@ -51,6 +51,8 @@ runs:
         script: |
           // Read the commitlint.log content
           const fs = require('fs');
+          const commitlintLog = fs.readFileSync('commitlint.log', 'utf8');
+          
           const pullRequest = github.context.payload.pull_request
           const conclusion: 'success' | 'failure' = context.job.status === "success" ? "success" : "failure"
           const commit = undefined
