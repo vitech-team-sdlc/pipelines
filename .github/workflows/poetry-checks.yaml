@@ -90,11 +90,26 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
           title: '☂️ Coverage: ${{ inputs.dir }}'
 
+      - name: Get changed Python files
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            **/*.py
+
       - name: 😑 Run Ruff
         continue-on-error: true
         shell: bash
-        #language="shell"
-        run: poetry run ruff check --output-format junit -o ruff.junit.xml .
+        #language=shell
+        run: |
+          if [ "${{ steps.changed-files.outputs.any_changed }}" == 'true' ]; then
+            echo "Linting the following changed Python files:"
+            echo "${{ steps.changed-files.outputs.all_changed_files }}"
+            
+            poetry run ruff check ${{ steps.changed-files.outputs.all_changed_files }}
+          else
+            echo "No changed Python files detected."
+          fi
 
       - name: 🎁 Publish Ruff
         uses: mikepenz/action-junit-report@v5
