@@ -99,6 +99,7 @@ jobs:
 
       - name: 😑 Run Ruff
         continue-on-error: true
+        if: ${{ github.event_name == 'pull_request' }}
         shell: bash
         #language=shell
         run: |
@@ -110,6 +111,13 @@ jobs:
           else
             echo "No changed Python files detected."
           fi
+
+      - name: 😑 Run Ruff
+        continue-on-error: true
+        if: ${{ github.event_name != 'pull_request' }}
+        shell: bash
+        #language=shell
+        run: poetry run ruff check --output-format junit -o ruff.junit.xml .
 
       - name: 🎁 Publish Ruff
         uses: mikepenz/action-junit-report@v5
