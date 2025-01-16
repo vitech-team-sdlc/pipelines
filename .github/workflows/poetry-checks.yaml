@@ -62,7 +62,7 @@ jobs:
         shell: bash
         #language=shell
         run: |
-          git config --global url."https://serhiykrupka:${{ secrets.PAT }}@github.com/".insteadOf "https://github.com/"
+          git config --global url."https://${{ secrets.PAT }}@github.com/".insteadOf "https://github.com/"
 
       - name: ⇣ Install Packages
         shell: bash
