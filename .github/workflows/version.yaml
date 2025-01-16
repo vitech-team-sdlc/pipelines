@@ -4,6 +4,18 @@ on:
   workflow_dispatch:
 
   workflow_call:
+    inputs:
+      fail-if-no-version:
+        description: |
+          Not all conventional commit prefixes produce a new version. For example, `ci`, `build`, and `chore` do not bump the version. 
+          In such cases, you might want to disable the version check inside the action.
+          Examples of commit messages and their version bump:
+            - `fix: correct a typo` -> Patch version bump (1.0.0 -> 1.0.1)
+            - `feat: add new feature` -> Minor version bump (1.0.0 -> 1.1.0)
+            - `chore: update dependencies` -> No version bump
+        required: false
+        default: "true"
+        type: string
     secrets:
       GH_TOKEN:
         description: "GitHub Token"
@@ -36,6 +48,7 @@ jobs:
       - uses: vitech-team-sdlc/pipelines/actions/version-next@main
         id: extract_version
         with:
+          fail: ${{ inputs.fail-if-no-version }}
           dry-run: 'true'
           use-default-config: 'false'
           token: ${{ secrets.GH_TOKEN }}
