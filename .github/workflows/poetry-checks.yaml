@@ -66,7 +66,7 @@ jobs:
 
       - name: ⇣ Install Packages
         shell: bash
-        run: sudo apt install portaudio19-dev alsa-utils
+        run: sudo apt-get install -y --no-install-recommends portaudio19-dev alsa-utils
 
       - name: ⇣ Install dependencies
         shell: bash
@@ -106,7 +106,7 @@ jobs:
             echo "Linting the following changed Python files:"
             echo "${{ steps.changed-files.outputs.all_changed_files }}"
             
-            poetry run ruff check ${{ steps.changed-files.outputs.all_changed_files }}
+            poetry run ruff check --output-format junit -o ruff.junit.xml ${{ steps.changed-files.outputs.all_changed_files }}
           else
             echo "No changed Python files detected."
           fi
