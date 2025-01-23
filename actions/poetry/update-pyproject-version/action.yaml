@@ -28,10 +28,10 @@ runs:
 
         # Check if there is any change to commit
         if [ -n "$(git status --porcelain ${{ inputs.pyproject-toml }})" ]; then
-          echo "Changes detected in pyproject.toml. Committing..."
-          git add pyproject.toml
-          git commit -m "chore: update pyproject.toml to version $VERSION"
+          echo "Changes detected in ${{ inputs.pyproject-toml }}. Committing..."
+          git add ${{ inputs.pyproject-toml }}
+          git commit -m "chore: update ${{ inputs.pyproject-toml }} to version $VERSION"
           git push origin HEAD
         else
-          echo "No changes in pyproject.toml to commit."
+          echo "No changes in ${{ inputs.pyproject-toml }} to commit."
         fi
