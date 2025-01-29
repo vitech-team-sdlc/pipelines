@@ -66,8 +66,8 @@ runs:
         file: "${{ inputs.context }}/${{ inputs.docker_file }}"
         context: ${{ inputs.context }}
         platforms: ${{  inputs.platforms }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+#        cache-from: type=gha
+#        cache-to: type=gha,mode=max
         push: true
         secrets: |
           GITHUB_TOKEN=${{ inputs.gh_token }}
