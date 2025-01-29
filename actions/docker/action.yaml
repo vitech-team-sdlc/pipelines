@@ -39,7 +39,7 @@ runs:
           {
             "debug": true,
             "features": {
-              "containerd-snapshotter": false
+              "containerd-snapshotter": true
             }
           }   
 
