@@ -18,6 +18,16 @@ on:
         required: false
         default: "."
         type: string
+      coverage-enabled:
+        description: "Publish Coverage"
+        required: false
+        default: "false"
+        type: string
+      ruff-enabled:
+        description: "Ruff Enabled"
+        required: false
+        default: "false"
+        type: string
     secrets:
       GH_TOKEN:
         description: "GitHub Token"
@@ -71,6 +81,7 @@ jobs:
 
       - name: ☂️ Publish Coverage
         uses: serhiykrupka/coverage@main
+        if: ${{ inputs.coverage-enabled == 'true' }}
         with:
           thresholdAll: 0.5
           sourceDir: src
@@ -88,7 +99,7 @@ jobs:
 
       - name: 😑 Run Ruff
         continue-on-error: true
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' && inputs.ruff-enabled == 'true' }}
         shell: bash
         #language=shell
         run: |
@@ -103,13 +114,14 @@ jobs:
 
       - name: 😑 Run Ruff
         continue-on-error: true
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request'  && inputs.ruff-enabled == 'true' }}
         shell: bash
         #language=shell
         run: poetry run ruff check --output-format junit -o ruff.junit.xml .
 
       - name: 🎁 Publish Ruff
         uses: mikepenz/action-junit-report@v5
+        if: ${{ inputs.ruff-enabled == 'true' }}
         with:
           check_name: '😑 Ruff: ${{ inputs.dir }}'
           report_paths: ${{ inputs.dir }}/ruff.junit.xml
