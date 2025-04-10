@@ -1,0 +1,116 @@
+name: Python Checks
+
+on:
+  workflow_call:
+    inputs:
+      python_version:
+        description: "Python version to use"
+        required: false
+        default: "3.11"
+        type: string
+      poetry_version:
+        description: "Poetry version to use"
+        required: false
+        default: "1.8"
+        type: string
+      dir:
+        description: "Working Directory"
+        required: false
+        default: "."
+        type: string
+    secrets:
+      GH_TOKEN:
+        description: "GitHub Token"
+        required: true
+      PAT:
+        description: "Personal Access Token"
+        required: false
+permissions:
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+jobs:
+  lint-and-test:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: ${{ inputs.python_version }}
+      POETRY_VERSION: ${{ inputs.poetry_version }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.dir }}
+    steps:
+      - name: ⇣ Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚙ Install Poetry
+        shell: bash
+        run: |
+          pip install poetry==${{ env.POETRY_VERSION }}
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+
+      - name: ⚙ Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'poetry'
+
+      - name: ⇣ Install dependencies
+        shell: bash
+        #language=shell
+        run: poetry install
+
+      - name: 👀Run Pytest with coverage
+        continue-on-error: true
+        shell: bash
+        #language=shell
+        run: |
+          poetry run pytest --cov=. --cov-report=xml --cov-report=term
+
+      - name: ☂️ Publish Coverage
+        uses: serhiykrupka/coverage@main
+        with:
+          thresholdAll: 0.5
+          sourceDir: src
+          publishType: check
+          coverageFile: ${{ inputs.dir }}/coverage.xml
+          token: ${{ secrets.GH_TOKEN }}
+          title: '☂️ Coverage: ${{ inputs.dir }}'
+
+      - name: Get changed Python files
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            **/*.py
+
+      - name: 😑 Run Ruff
+        continue-on-error: true
+        if: ${{ github.event_name == 'pull_request' }}
+        shell: bash
+        #language=shell
+        run: |
+          if [ "${{ steps.changed-files.outputs.any_changed }}" == 'true' ]; then
+            echo "Linting the following changed Python files:"
+            echo "${{ steps.changed-files.outputs.all_changed_files }}"
+          
+            poetry run ruff check --output-format junit -o ruff.junit.xml ${{ steps.changed-files.outputs.all_changed_files }}
+          else
+            echo "No changed Python files detected."
+          fi
+
+      - name: 😑 Run Ruff
+        continue-on-error: true
+        if: ${{ github.event_name != 'pull_request' }}
+        shell: bash
+        #language=shell
+        run: poetry run ruff check --output-format junit -o ruff.junit.xml .
+
+      - name: 🎁 Publish Ruff
+        uses: mikepenz/action-junit-report@v5
+        with:
+          check_name: '😑 Ruff: ${{ inputs.dir }}'
+          report_paths: ${{ inputs.dir }}/ruff.junit.xml
+          annotate_only: false
