@@ -20,6 +20,10 @@ inputs:
     description: Fail if no version is detected
     required: false
     default: 'true'
+  working-dir:
+    description: Working directory for semantic-release operations
+    required: false
+    default: '.'
 outputs:
   version:
     description: 'new version detected by semantic-release'
@@ -33,6 +37,10 @@ runs:
       # language=python
       run: |
         import os
+
+        working_dir = '${{ inputs.working-dir }}'
+        if working_dir and working_dir != '.':
+            os.chdir(working_dir)
 
         config = '.releaserc.json'
         if os.path.exists(config):
@@ -64,6 +72,7 @@ runs:
     - name: "Semantic Release: Dry Run"
       shell: bash
       if: ${{ inputs.dry-run == 'true' }}
+      working-directory: ${{ inputs.working-dir }}
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
         SLACK_WEBHOOK: ${{ inputs.slack_webhook }}
@@ -75,6 +84,7 @@ runs:
     - name: "Semantic Release"
       shell: bash
       if: ${{ inputs.dry-run == 'false' }}
+      working-directory: ${{ inputs.working-dir }}
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
         GH_TOKEN: ${{ inputs.token }}
@@ -87,6 +97,7 @@ runs:
     - name: check if version presented
       if: ${{ inputs.fail == 'true' }}
       shell: bash
+      working-directory: ${{ inputs.working-dir }}
       #language="bash"
       run: |
         export VERSION="$(cat .VERSION)"
@@ -99,6 +110,7 @@ runs:
     - name: Extract version from Git tags
       id: new_version_sr
       shell: bash
+      working-directory: ${{ inputs.working-dir }}
       #language="bash"
       run: |
         export VERSION="$(cat .VERSION)"        
