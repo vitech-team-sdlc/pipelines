@@ -16,6 +16,11 @@ on:
         required: false
         default: "true"
         type: string
+      working-dir:
+        description: "Working directory for semantic-release operations"
+        required: false
+        default: '.'
+        type: string
     secrets:
       GH_TOKEN:
         description: "GitHub Token"
@@ -53,3 +58,4 @@ jobs:
           use-default-config: 'false'
           token: ${{ secrets.GH_TOKEN }}
           slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+          working-dir: ${{ inputs.working-dir }}
